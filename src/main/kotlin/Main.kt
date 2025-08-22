@@ -1,6 +1,6 @@
 package org.example
 
 fun main() {
-    val tarea: Tarea = Tarea(1, "Primera tarea", "Esta es la primera tarea de prueba", )
+    val tarea: Tarea = Tarea(1, "Primera tarea", "Esta es la descripción de la primera tarea", )
     println(tarea)
 }

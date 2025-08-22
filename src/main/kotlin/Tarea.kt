@@ -14,4 +14,20 @@ data class Tarea (
     val titulo: String,
     val descripcion: String,
     var completada: Boolean = false
-){}
+){
+    /**
+    * Función que alterna la completitud de la tarea, por ejemplo: si la tarea no está completada (completada = false), el valor va a cambiar a completada (completada = true)
+    */
+    fun alternarCompletada(){
+        completada = !completada
+    }
+
+    /**
+     * Me permite mostrar el estado de la tarea de una forma más bonita
+     */
+    override fun toString(): String {
+        val estado = if(completada) "Completada" else "Pendiente"
+        return "|$estado| [$id] $titulo - $descripcion"
+    }
+
+}
