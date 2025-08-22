@@ -51,9 +51,3 @@ println(tarea) // |Completada| [1] Estudiar Kotlin - Repasar conceptos de POO y 
 1. Clona este repositorio
 2. Abre el proyecto en tu IDE favorito (IntelliJ IDEA recomendado)
 3. Ejecuta la función `main()` en `Main.kt`
-
-## 📋 Requisitos
-
-- Kotlin 1.8+
-- JVM 11+
-
