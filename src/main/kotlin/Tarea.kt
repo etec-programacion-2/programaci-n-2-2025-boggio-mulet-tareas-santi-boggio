@@ -7,13 +7,16 @@ package org.example
  * @property titulo | Título descriptivo de la tarea (inmutable)
  * @property descripcion | Descripción detallada de la tarea (inmutable)
  * @property completada | Estado (True or False) de completitud de la tarea (mutable, por defecto false)
+ * @property prioridad | Asignacion de la propiedad de la variable
+ *
  */
 
 data class Tarea (
     val id: Int,
     val titulo: String,
     val descripcion: String,
-    var completada: Boolean = false
+    var completada: Boolean = false,
+    val prioridad: Prioridad
 ){
     /**
     * Función que alterna la completitud de la tarea, por ejemplo: si la tarea no está completada (completada = false), el valor va a cambiar a completada (completada = true)
@@ -27,7 +30,7 @@ data class Tarea (
      */
     override fun toString(): String {
         val estado = if(completada) "Completada" else "Pendiente"
-        return "|$estado| [$id] $titulo - $descripcion"
+        return "|$estado| [$id] $titulo - $descripcion prioridad: $prioridad"
     }
 
 }
