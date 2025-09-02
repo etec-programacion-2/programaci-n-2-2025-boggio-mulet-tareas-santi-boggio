@@ -6,6 +6,8 @@ fun main() {
 
     val usuario: Usuario = Usuario(1,"santiago", "santimulet@.com")
     println(usuario)
+
+    val lista: List<String> = listOf<String>(tarea.titulo)
+    val proyecto: Proyecto = Proyecto(1, "prueba", "pruebita prime", lista)
+    print(proyecto)
 }
-    val lista: MutableList<String> = mutableListOf()
-    val proyecto: Proyecto = Proyecto(1, "prueba", "pruebita prime", )
