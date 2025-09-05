@@ -20,4 +20,8 @@ fun main() {
     val usuario: Usuario = Usuario(1,"santiago", "santimulet@gmail.com")
     println("Usuario creado:")
     println(usuario)
+
+    val lista: List<String> = listOf<String>(tarea.titulo)
+    val proyecto: Proyecto = Proyecto(1, "prueba", "pruebita prime", lista)
+    print(proyecto)
 }
