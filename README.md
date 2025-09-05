@@ -9,7 +9,7 @@ Un sistema de gestión de tareas personal desarrollado en Kotlin que te permite 
 - **Crear tareas**: Añade nuevas tareas con título, descripción detallada y nivel de prioridad
 - **Sistema de prioridades**: Clasifica tus tareas por importancia (BAJA, MEDIA, ALTA)
 - **Gestión de usuarios**: Registra usuarios con validación de email
-- **Gestionar estado**: Marca tareas como completadas o pendientes
+- **Gestionar estado**: Marca tareas como completadas o pendientes con métodos específicos
 - **Identificación única**: Cada tarea y usuario tiene un ID único para fácil seguimiento
 - **Vista clara**: Visualiza el estado de tus tareas de forma organizada
 
@@ -17,25 +17,37 @@ Un sistema de gestión de tareas personal desarrollado en Kotlin que te permite 
 
 - ✅ Creación de tareas con ID, título, descripción y prioridad
 - ✅ Sistema de prioridades con enum class (BAJA, MEDIA, ALTA)
-- ✅ Alternar estado de completitud (pendiente ↔ completada)
+- ✅ Control de estado con métodos específicos (marcar completada/pendiente)
+- ✅ Encapsulamiento de la propiedad `completada` para mayor seguridad
+- ✅ Métodos getter para consultar el estado (`estaCompletada()`)
 - ✅ Gestión de usuarios con validación de email
 - ✅ Visualización formateada del estado de las tareas y usuarios
 
 ## 🏗️ Arquitectura
 
 ### Clase `Tarea`
-Data class que encapsula toda la información de una tarea individual:
+Data class que encapsula toda la información de una tarea individual con principios de POO:
 
 **Propiedades:**
 - `id: Int` - Identificador único (inmutable)
 - `titulo: String` - Título descriptivo (inmutable)
 - `descripcion: String` - Descripción detallada (inmutable)
-- `completada: Boolean` - Estado de completitud (mutable, por defecto `false`)
+- `completada: Boolean` - Estado de completitud (privado y mutable, por defecto `false`)
 - `prioridad: Prioridad` - Nivel de importancia de la tarea (inmutable)
 
-**Métodos:**
+**Métodos de Control de Estado:**
+- `marcarComoCompletada()` - Establece la tarea como completada (true)
+- `marcarComoPendiente()` - Establece la tarea como pendiente (false)
 - `alternarCompletada()` - Cambia el estado entre completada y pendiente
-- `toString()` - Representación formateada de la tarea con prioridad
+- `estaCompletada(): Boolean` - Getter para consultar el estado actual
+
+**Características de Encapsulamiento:**
+- La propiedad `completada` es privada para forzar el uso de métodos controlados
+- Interfaz pública clara y segura para manipular el estado
+- Previene modificaciones accidentales del estado interno
+
+**Otros Métodos:**
+- `toString()` - Representación formateada de la tarea con estado y prioridad
 
 ### Enum `Prioridad`
 Enum class que define los niveles de prioridad disponibles:
@@ -69,7 +81,7 @@ Data class que representa un usuario del sistema:
 
 ## 🎯 Ejemplo de Uso
 
-### Creación de Tareas
+### Creación y Gestión de Tareas
 
 ```kotlin
 // Crear una nueva tarea con prioridad
@@ -79,10 +91,21 @@ val tarea = Tarea(1, "Estudiar Kotlin", "Repasar conceptos de POO y data classes
 println(tarea) 
 // |Pendiente| [1] Estudiar Kotlin - Repasar conceptos de POO y data classes prioridad: ALTA
 
-// Marcar como completada
-tarea.alternarCompletada()
+// Verificar estado actual
+println("¿Está completada? ${tarea.estaCompletada()}") // false
+
+// Marcar como completada usando método específico
+tarea.marcarComoCompletada()
 println(tarea) 
 // |Completada| [1] Estudiar Kotlin - Repasar conceptos de POO y data classes prioridad: ALTA
+
+// Verificar nuevo estado
+println("¿Está completada? ${tarea.estaCompletada()}") // true
+
+// Alternar estado (completada → pendiente)
+tarea.alternarCompletada()
+println(tarea)
+// |Pendiente| [1] Estudiar Kotlin - Repasar conceptos de POO y data classes prioridad: ALTA
 ```
 
 ### Gestión de Usuarios
@@ -105,8 +128,12 @@ println(usuario) // [1] Santiago -> santimulet@gmail.com
 
 ```
 src/main/kotlin/
-├── Main.kt        # Punto de entrada de la aplicación
-├── Tarea.kt       # Data class para gestión de tareas
+├── Main.kt        # Punto de entrada con ejemplos de uso
+├── Tarea.kt       # Data class para gestión de tareas con encapsulamiento
 ├── Usuario.kt     # Data class para gestión de usuarios
 └── Prioridad.kt   # Enum class para niveles de prioridad
 ```
+
+- Filtrado por prioridad y estado
+- Interfaz gráfica de usuario
+- Sistema de categorías para las tareas
