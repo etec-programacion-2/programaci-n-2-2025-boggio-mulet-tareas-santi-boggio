@@ -2,16 +2,17 @@
 ****
 # Sistema de Gestión de Tareas 📋
 
-Un sistema de gestión de tareas personal desarrollado en Kotlin que te permite organizar tu día a día como una agenda digital con gestión de usuarios y prioridades.
+Un sistema de gestión de tareas personal desarrollado en Kotlin que te permite organizar tu día a día como una agenda digital con gestión de usuarios, prioridades y proyectos.
 
 ## 🚀 Características
 
 - **Crear tareas**: Añade nuevas tareas con título, descripción detallada y nivel de prioridad
 - **Sistema de prioridades**: Clasifica tus tareas por importancia (BAJA, MEDIA, ALTA)
 - **Gestión de usuarios**: Registra usuarios con validación de email
+- **Gestión de proyectos**: Organiza tareas relacionadas bajo proyectos específicos
 - **Gestionar estado**: Marca tareas como completadas o pendientes con métodos específicos
-- **Identificación única**: Cada tarea y usuario tiene un ID único para fácil seguimiento
-- **Vista clara**: Visualiza el estado de tus tareas de forma organizada
+- **Identificación única**: Cada tarea, usuario y proyecto tiene un ID único para fácil seguimiento
+- **Vista clara**: Visualiza el estado de tus tareas y proyectos de forma organizada
 
 ### 🔄 Funcionalidades Actuales
 
@@ -21,7 +22,8 @@ Un sistema de gestión de tareas personal desarrollado en Kotlin que te permite 
 - ✅ Encapsulamiento de la propiedad `completada` para mayor seguridad
 - ✅ Métodos getter para consultar el estado (`estaCompletada()`)
 - ✅ Gestión de usuarios con validación de email
-- ✅ Visualización formateada del estado de las tareas y usuarios
+- ✅ Gestión de proyectos con agrupación de tareas
+- ✅ Visualización formateada del estado de las tareas, usuarios y proyectos
 
 ## 🏗️ Arquitectura
 
@@ -79,6 +81,23 @@ Data class que representa un usuario del sistema:
 - `isValidEmail()` - Validación privada del formato de email
 - `toString()` - Representación formateada del usuario
 
+### Clase `Proyecto`
+Data class que representa un proyecto que agrupa tareas relacionadas:
+
+**Propiedades:**
+- `id: Int` - Identificador único del proyecto (inmutable)
+- `nombre: String` - Nombre descriptivo del proyecto (inmutable)
+- `descripcion: String` - Descripción detallada del proyecto (inmutable)
+- `listadetareas: List<String>` - Lista de títulos de tareas asociadas al proyecto (inmutable)
+
+**Características:**
+- Permite organizar tareas bajo proyectos específicos
+- Facilita la visualización y gestión de tareas relacionadas
+- Mantiene una referencia a las tareas mediante sus títulos
+
+**Métodos:**
+- `toString()` - Representación formateada del proyecto con su información y lista de tareas
+
 ## 🎯 Ejemplo de Uso
 
 ### Creación y Gestión de Tareas
@@ -118,22 +137,30 @@ val usuario = Usuario(1, "Santiago", "santimulet@gmail.com")
 println(usuario) // [1] Santiago -> santimulet@gmail.com
 ```
 
+### Gestión de Proyectos
+
+```kotlin
+// Crear una tarea
+val tarea = Tarea(1, "Primera tarea", "Esta es la descripción de la primera tarea", prioridad = Prioridad.BAJA)
+
+// Crear una lista de tareas para el proyecto
+val listaTareas = listOf(tarea.titulo)
+
+// Crear un nuevo proyecto
+val proyecto = Proyecto(1, "Proyecto de Desarrollo", "Sistema de gestión de tareas en Kotlin", listaTareas)
+
+// Mostrar información del proyecto
+println(proyecto)
+/* Salida:
+ID: 1
+Nombre: Proyecto de Desarrollo
+Esta es la descripcion del proyecto: Sistema de gestión de tareas en Kotlin
+Estas son sus tareas: [Primera tarea]
+*/
+```
+
 ## 🚀 Cómo Ejecutar
 
 1. Clona este repositorio
 2. Abre el proyecto en tu IDE favorito (IntelliJ IDEA recomendado)
 3. Ejecuta la función `main()` en `Main.kt`
-
-## 📁 Estructura del Proyecto
-
-```
-src/main/kotlin/
-├── Main.kt        # Punto de entrada con ejemplos de uso
-├── Tarea.kt       # Data class para gestión de tareas con encapsulamiento
-├── Usuario.kt     # Data class para gestión de usuarios
-└── Prioridad.kt   # Enum class para niveles de prioridad
-```
-
-- Filtrado por prioridad y estado
-- Interfaz gráfica de usuario
-- Sistema de categorías para las tareas
