@@ -8,16 +8,41 @@ package org.example
  * @property descripcion | Descripción detallada de la tarea (inmutable)
  * @property completada | Estado (True or False) de completitud de la tarea (mutable, por defecto false)
  * @property prioridad | Asignacion de la prioridad de la Tarea
- *
+ * @property asignadoA | Asignacion de la tarea a un usuario
  */
-
 data class Tarea (
     val id: Int,
     val titulo: String,
     val descripcion: String,
     private var completada: Boolean = false, // Ahora es privada para forzar el uso de métodos
-    val prioridad: Prioridad
+    val prioridad: Prioridad,
+    private var asignadoA: Usuario? = null // Propiedad privada para controlar la asignación de usuarios
 ){
+    /**
+     * Asigna un usuario específico a esta tarea.
+     * Establece el responsable que deberá completar la tarea.
+     * @param usuario El usuario que será asignado como responsable de la tarea
+     */
+    fun asignarusuario (usuario: Usuario){
+        asignadoA = usuario
+    }
+
+    /**
+     * Desasigna el usuario actualmente responsable de la tarea.
+     * La tarea quedará sin asignar (asignadoA = null), disponible para nueva asignación.
+     */
+    fun desasignarusuario (){
+        asignadoA = null
+    }
+
+    /**
+     * Getter para obtener el usuario actualmente asignado a la tarea.
+     * @return El usuario asignado a la tarea, o null si no hay ningún usuario asignado
+     */
+    fun obtenerUsuarioAsignado(): Usuario? {
+        return asignadoA
+    }
+
     /**
      * Función que alterna la completitud de la tarea, por ejemplo: si la tarea no está completada (completada = false), el valor va a cambiar a completada (completada = true)
      */
@@ -57,11 +82,14 @@ data class Tarea (
     }
 
     /**
-     * Me permite mostrar el estado de la tarea de una forma más bonita
+     * Representación en cadena de texto de la tarea para visualización.
+     * Muestra el estado, ID, título, descripción, prioridad y asignación.
+     * @return String formateado con toda la información relevante de la tarea
      */
     override fun toString(): String {
         val estado = if(completada) "Completada" else "Pendiente"
-        return "|$estado| [$id] $titulo - $descripcion prioridad: $prioridad"
+        val asig = asignadoA?.email
+        return "|$estado| [$id] $titulo - $descripcion prioridad: $prioridad \n" +
+                "asignacion: $asig"
     }
-
 }
