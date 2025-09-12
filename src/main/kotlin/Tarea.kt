@@ -90,6 +90,6 @@ data class Tarea (
         val estado = if(completada) "Completada" else "Pendiente"
         val asig = asignadoA?.email
         return "|$estado| [$id] $titulo - $descripcion prioridad: $prioridad \n" +
-                "asignacion: $asig"
+                "usuario respondable: $asig"
     }
 }
