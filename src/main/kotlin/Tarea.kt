@@ -36,6 +36,14 @@ data class Tarea (
     }
 
     /**
+     * Getter para obtener el usuario a la tarea.
+     * @return Atributo del usuario asignado a la tarea.
+     */
+    fun getAsignacion(): Usuario?{
+        return asignadoA
+    }
+
+    /**
      * Getter para obtener el usuario actualmente asignado a la tarea.
      * @return El usuario asignado a la tarea, o null si no hay ningún usuario asignado
      */
