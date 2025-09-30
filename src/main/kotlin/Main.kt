@@ -17,13 +17,13 @@ fun main() {
 
         when (opcion) {
             1 -> interfas.crearproyecto()
-            2 -> interfas.()
-            3 -> interfas.()
-            4 -> interfas.()
-            5 -> interfas.()
-            6 -> interfas.()
-            7 -> interfas.()
-            0 -> println("¡Hasta luego!")
+            2 -> interfas.crearusuario()
+            3 -> interfas.creartarea()
+            4 -> interfas.agregartareaaproyecto()
+            //5 -> interfas.()
+            //6 -> interfas.()
+            //7 -> interfas.()
+            //*0 -> println("¡Hasta luego!")
             else -> println("Opción inválida. Intente de nuevo.")
         }
 
