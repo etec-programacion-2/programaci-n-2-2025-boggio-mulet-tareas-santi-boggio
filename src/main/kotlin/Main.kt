@@ -20,10 +20,10 @@ fun main() {
             2 -> interfas.crearusuario()
             3 -> interfas.creartarea()
             4 -> interfas.agregartareaaproyecto()
-            //5 -> interfas.()
-            //6 -> interfas.()
-            //7 -> interfas.()
-            //*0 -> println("¡Hasta luego!")
+            5 -> interfas.agregarusuarioatarea()
+            6 -> interfas.buscartareaporusuario()
+            7 -> interfas.mostrarlosproyecto()
+            0 -> println("¡Hasta luego!")
             else -> println("Opción inválida. Intente de nuevo.")
         }
 
