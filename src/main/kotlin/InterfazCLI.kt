@@ -2,7 +2,7 @@ package org.example
 import java.util.Scanner
 
 
-class InterfasCLI {
+class InterfazCLI {
     val gestor = GestorDeTareas()
     val scanner = Scanner(System.`in`)
 
@@ -13,7 +13,7 @@ class InterfasCLI {
         println("3. Crear tarea")
         println("4. Agregar Tarea A Proyecto")
         println("5. Asignar Usuario A Tarea")
-        println("6. buscar Tareas Por Usuario")
+        println("6. Buscar Tareas Por Usuario")
         println("7. Mostrar Proyectos")
         println("0. Salir")
         println("Ingrese su opción: ")
@@ -74,15 +74,17 @@ class InterfasCLI {
         var ID_tarea = scanner.nextInt() // int
         println("ingrese el ID del usuario:")
         var ID_usuario = scanner.nextInt() // int
-        val asignartarea = gestor.asignarUsuarioATarea(ID_tarea, ID_usuario)
+        gestor.asignarUsuarioATarea(ID_tarea, ID_usuario)
 
     }
 
-    fun buscartareaporusuario (){
+    fun buscartareaporusuario(){
         println("ingrese el ID del usuario:")
         var ID_usuario = scanner.nextInt() // int
         val lista = gestor.buscarTareasPorUsuario(ID_usuario)
+        println(lista)
     }
+
     fun mostrarlosproyecto(){
         val mostrar = gestor.mostrarProyectos()
         println(mostrar)
