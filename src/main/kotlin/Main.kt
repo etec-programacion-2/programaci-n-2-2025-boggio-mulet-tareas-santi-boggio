@@ -6,7 +6,7 @@ package org.example
 import java.util.Scanner
 
 fun main() {
-    val interfas = InterfasCLI()
+    val interfas = InterfazCLI()
     val scanner = Scanner(System.`in`)
     var opcion: Int
 
