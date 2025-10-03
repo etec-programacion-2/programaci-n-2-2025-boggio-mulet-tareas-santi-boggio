@@ -15,8 +15,10 @@ class InterfazCLI {
         println("5. Asignar Usuario A Tarea")
         println("6. Buscar Tareas Por Usuario")
         println("7. Mostrar Proyectos")
+        println("8 Cambiar el estado de la tarea (pendiente - completado)")
         println("0. Salir")
         println("Ingrese su opción: ")
+
     }
 
     fun crearproyecto(){
@@ -88,6 +90,12 @@ class InterfazCLI {
     fun mostrarlosproyecto(){
         val mostrar = gestor.mostrarProyectos()
         println(mostrar)
+    }
+
+    fun cambiarestado(){
+        println("ingrese el ID de la tarea:")
+        var ID_tarea = scanner.nextInt() // int
+        gestor.cambiarcompletado(idTarea = ID_tarea )
     }
 
 }
