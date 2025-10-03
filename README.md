@@ -2,33 +2,86 @@
 ****
 # Sistema de Gestión de Tareas 📋
 
-Un sistema de gestión de tareas personal desarrollado en Kotlin que te permite organizar tu día a día como una agenda digital con gestión de usuarios, prioridades, proyectos y asignación de responsables.
+Un sistema de gestión de tareas personal desarrollado en Kotlin que te permite organizar tu día a día como una agenda digital con gestión de usuarios, prioridades, proyectos y asignación de responsables mediante una interfaz de línea de comandos (CLI).
 
 ## 🚀 Características
 
+- **Interfaz CLI interactiva**: Menú intuitivo para gestionar todas las funcionalidades del sistema
 - **Crear tareas**: Añade nuevas tareas con título, descripción detallada y nivel de prioridad
 - **Sistema de prioridades**: Clasifica tus tareas por importancia (BAJA, MEDIA, ALTA)
 - **Gestión de usuarios**: Registra usuarios con validación de email
 - **Asignación de tareas**: Asigna tareas a usuarios específicos como responsables
 - **Gestión de proyectos**: Organiza tareas relacionadas bajo proyectos específicos
 - **Gestionar estado**: Marca tareas como completadas o pendientes con métodos específicos
-- **Identificación única**: Cada tarea, usuario y proyecto tiene un ID único para fácil seguimiento
+- **Identificación única**: Cada tarea, usuario y proyecto tiene un ID único autogenerado
 - **Vista clara**: Visualiza el estado de tus tareas, proyectos y asignaciones de forma organizada
+- **Buscar tareas por usuario**: Encuentra rápidamente todas las tareas asignadas a un usuario específico
+- **Filtrado de tareas**: Obtén tareas pendientes o completadas de un proyecto
 
 ### 🔄 Funcionalidades Actuales
 
-- ✅ Creación de tareas con ID, título, descripción y prioridad
+- ✅ Interfaz CLI con menú interactivo
+- ✅ Creación de tareas con ID autogenerado, título, descripción y prioridad
 - ✅ Sistema de prioridades con enum class (BAJA, MEDIA, ALTA)
 - ✅ Control de estado con métodos específicos (marcar completada/pendiente)
 - ✅ Encapsulamiento de la propiedad `completada` para mayor seguridad
 - ✅ Métodos getter para consultar el estado (`estaCompletada()`)
 - ✅ **Asignación de usuarios a tareas con control de acceso**
 - ✅ **Métodos para asignar, desasignar y consultar usuarios responsables**
-- ✅ Gestión de usuarios con validación de email
-- ✅ Gestión de proyectos con agrupación de tareas
+- ✅ Gestión de usuarios con validación de email y IDs autogenerados
+- ✅ Gestión de proyectos con agrupación de tareas e IDs autogenerados
+- ✅ **Clase GestorDeTareas para centralizar la lógica del negocio**
+- ✅ **Búsqueda de tareas por usuario asignado**
+- ✅ **Agregar y eliminar tareas de proyectos dinámicamente**
+- ✅ **Obtener tareas pendientes y completadas de un proyecto**
 - ✅ Visualización formateada del estado de las tareas, usuarios, proyectos y asignaciones
 
 ## 🏗️ Arquitectura
+
+### Clase `GestorDeTareas`
+Clase principal que centraliza toda la lógica de negocio del sistema. Implementa el patrón de diseño de responsabilidad única, separando la gestión de datos del punto de entrada de la aplicación.
+
+**Propiedades privadas:**
+- `allProyectos: MutableList<Proyecto>` - Lista de todos los proyectos
+- `allTareas: MutableList<Tarea>` - Lista de todas las tareas
+- `allUsers: MutableList<Usuario>` - Lista de todos los usuarios
+- `idProyectoActual: Int` - Contador autoincremental para IDs de proyectos
+- `idUsuarioActual: Int` - Contador autoincremental para IDs de usuarios
+- `idTareaActual: Int` - Contador autoincremental para IDs de tareas
+
+**Métodos principales:**
+- `crearProyecto(nombrePy, descripcionPy): Proyecto` - Crea un nuevo proyecto con ID autogenerado
+- `crearUsuario(username, email): Usuario` - Crea un nuevo usuario con ID autogenerado
+- `crearTarea(nombreTarea, descripcionTarea, prioridadTarea): Tarea` - Crea una nueva tarea con ID autogenerado
+- `agregarTareaAProyecto(idTarea, idProyecto)` - Asocia una tarea existente a un proyecto
+- `asignarUsuarioATarea(idTarea, idUsuario)` - Asigna un usuario a una tarea específica
+- `buscarTareasPorUsuario(idUsuario): List<Tarea>` - Busca todas las tareas de un usuario
+- `mostrarProyectos(): MutableList<Proyecto>` - Retorna todos los proyectos
+- `cambiarcompletado(idTarea)` - Alterna el estado de completitud de una tarea
+
+**Ventajas del diseño:**
+- Separación de responsabilidades (no mezcla lógica con presentación)
+- Fácil de testear unitariamente
+- Reutilizable en diferentes interfaces (CLI, GUI, API)
+- Escalable y mantenible
+
+### Clase `InterfazCLI`
+Clase que maneja toda la interacción con el usuario a través de la línea de comandos.
+
+**Propiedades:**
+- `gestor: GestorDeTareas` - Instancia del gestor de tareas
+- `scanner: Scanner` - Para leer entrada del usuario
+
+**Métodos de interfaz:**
+- `mostrarMenu()` - Muestra el menú principal con todas las opciones
+- `crearproyecto()` - Interfaz para crear un nuevo proyecto
+- `crearusuario()` - Interfaz para crear un nuevo usuario
+- `creartarea()` - Interfaz para crear una nueva tarea
+- `agregartareaaproyecto()` - Interfaz para agregar tarea a proyecto
+- `agregarusuarioatarea()` - Interfaz para asignar usuario a tarea
+- `buscartareaporusuario()` - Interfaz para buscar tareas por usuario
+- `mostrarlosproyecto()` - Interfaz para mostrar todos los proyectos
+- `cambiarestado()` - Interfaz para cambiar estado de una tarea
 
 ### Clase `Tarea`
 Data class que encapsula toda la información de una tarea individual con principios de POO:
@@ -51,6 +104,7 @@ Data class que encapsula toda la información de una tarea individual con princi
 - `asignarusuario(usuario: Usuario)` - Asigna un usuario específico como responsable
 - `desasignarusuario()` - Desasigna el usuario actual (establece como null)
 - `obtenerUsuarioAsignado(): Usuario?` - Getter para consultar el usuario asignado
+- `getAsignacion(): Usuario?` - Getter alternativo para obtener el usuario asignado
 
 **Características de Encapsulamiento:**
 - La propiedad `completada` es privada para forzar el uso de métodos controlados
@@ -98,120 +152,170 @@ Data class que representa un proyecto que agrupa tareas relacionadas:
 - `id: Int` - Identificador único del proyecto (inmutable)
 - `nombre: String` - Nombre descriptivo del proyecto (inmutable)
 - `descripcion: String` - Descripción detallada del proyecto (inmutable)
-- `listadetareas: List<String>` - Lista de títulos de tareas asociadas al proyecto (inmutable)
+- `listadetareas: MutableList<Tarea>` - Lista de tareas asociadas al proyecto (privado y mutable)
 
 **Características:**
 - Permite organizar tareas bajo proyectos específicos
 - Facilita la visualización y gestión de tareas relacionadas
-- Mantiene una referencia a las tareas mediante sus títulos
+- Mantiene una lista mutable de objetos Tarea para gestión dinámica
+- Encapsulamiento de la lista de tareas para control de acceso
 
 **Métodos:**
-- `toString()` - Representación formateada del proyecto con su información y lista de tareas
+- `agregarTarea(tarea: Tarea)` - Agrega una tarea al proyecto
+- `eliminarTarea(idTarea: Int)` - Elimina una tarea por su ID
+- `obtenerTareasPendientes(): List<Tarea>` - Retorna solo las tareas no completadas
+- `obtenerTareasCompletadas(): List<Tarea>` - Retorna solo las tareas completadas
+- `tareasBeauty(): String` - Formatea las tareas para visualización
+- `toString()` - Representación formateada del proyecto con todas sus tareas
 
 ## 🎯 Ejemplo de Uso
 
-### Creación y Gestión de Tareas
+### Uso del Sistema con CLI
 
 ```kotlin
-// Crear un usuario
-val usuario = Usuario(1, "Santiago", "santimulet@gmail.com")
+fun main() {
+    val interfas = InterfazCLI()
+    val scanner = Scanner(System.`in`)
+    var opcion: Int
 
-// Crear una nueva tarea con prioridad y usuario asignado
-val tarea = Tarea(1, "Estudiar Kotlin", "Repasar conceptos de POO y data classes", 
-                  prioridad = Prioridad.ALTA, asignadoA = usuario)
+    do {
+        interfas.mostrarMenu()
+        opcion = scanner.nextInt()
 
-// Mostrar el estado actual
-println(tarea) 
-/* Salida:
-|Pendiente| [1] Estudiar Kotlin - Repasar conceptos de POO y data classes prioridad: ALTA 
-asignacion: santimulet@gmail.com
-*/
-
-// Verificar estado actual
-println("¿Está completada? ${tarea.estaCompletada()}") // false
-
-// Marcar como completada usando método específico
-tarea.marcarComoCompletada()
-println(tarea) 
-/* Salida:
-|Completada| [1] Estudiar Kotlin - Repasar conceptos de POO y data classes prioridad: ALTA 
-asignacion: santimulet@gmail.com
-*/
-
-// Verificar nuevo estado
-println("¿Está completada? ${tarea.estaCompletada()}") // true
-
-// Alternar estado (completada → pendiente)
-tarea.alternarCompletada()
-println(tarea)
-/* Salida:
-|Pendiente| [1] Estudiar Kotlin - Repasar conceptos de POO y data classes prioridad: ALTA 
-asignacion: santimulet@gmail.com
-*/
+        when (opcion) {
+            1 -> interfas.crearproyecto()
+            2 -> interfas.crearusuario()
+            3 -> interfas.creartarea()
+            4 -> interfas.agregartareaaproyecto()
+            5 -> interfas.agregarusuarioatarea()
+            6 -> interfas.buscartareaporusuario()
+            7 -> interfas.mostrarlosproyecto()
+            8 -> interfas.cambiarestado()
+            0 -> println("¡Hasta luego!")
+            else -> println("Opción inválida. Intente de nuevo.")
+        }
+    } while (opcion != 0)
+}
 ```
 
-### Gestión de Asignación de Usuarios
+### Ejemplo de Flujo Interactivo
 
-```kotlin
-// Crear usuarios
-val usuario1 = Usuario(1, "Santiago", "santimulet@gmail.com")
-val usuario2 = Usuario(2, "Mateo", "mateo@gmail.com")
+```
+=== GESTOR DE TAREAS ===
+1. Crear proyecto
+2. Crear usuario
+3. Crear tarea
+4. Agregar Tarea A Proyecto
+5. Asignar Usuario A Tarea
+6. Buscar Tareas Por Usuario
+7. Mostrar Proyectos
+8. Cambiar el estado de la tarea (pendiente - completado)
+0. Salir
+Ingrese su opción: 2
 
-// Crear una tarea sin asignar
-val tarea = Tarea(1, "Revisar código", "Revisar implementación de POO", prioridad = Prioridad.MEDIA)
+ingrese el nombre del usuario:
+Santiago
+ingrese un mail para su usuario:
+santimulet@gmail.com
+[1] Santiago -> santimulet@gmail.com
 
-// Verificar si tiene usuario asignado
-println("Usuario asignado: ${tarea.obtenerUsuarioAsignado()}") // null
+Ingrese su opción: 3
 
-// Asignar usuario a la tarea
-tarea.asignarusuario(usuario1)
-println("Usuario asignado: ${tarea.obtenerUsuarioAsignado()?.nombre}") // Santiago
-
-// Reasignar a otro usuario
-tarea.asignarusuario(usuario2)
-println("Usuario asignado: ${tarea.obtenerUsuarioAsignado()?.nombre}") // Mateo
-
-// Desasignar usuario
-tarea.desasignarusuario()
-println("Usuario asignado: ${tarea.obtenerUsuarioAsignado()}") // null
+ingrese el nombre del tarea:
+Estudiar Kotlin
+ingrese una descripcion:
+Repasar conceptos de POO
+ingrese la prioridad de la tarea (baja, media, alta)
+alta
+|Pendiente| [1] Estudiar Kotlin - Repasar conceptos de POO prioridad: ALTA 
+usuario respondable: null
 ```
 
-### Gestión de Usuarios
+### Creación Programática con GestorDeTareas
 
 ```kotlin
-// Crear un nuevo usuario
-val usuario = Usuario(1, "Santiago", "santimulet@gmail.com")
+// Crear instancia del gestor
+val gestor = GestorDeTareas()
 
-// Mostrar información del usuario
-println(usuario) // [1] Santiago -> santimulet@gmail.com
+// Crear usuarios (IDs generados automáticamente)
+val usuario1 = gestor.crearUsuario("Santiago", "santimulet@gmail.com")
+val usuario2 = gestor.crearUsuario("Mateo", "mateo@gmail.com")
+
+// Crear proyecto (ID generado automáticamente)
+val proyecto = gestor.crearProyecto("Proyecto Kotlin", "Desarrollo del sistema de tareas")
+
+// Crear tareas (IDs generados automáticamente)
+val tarea1 = gestor.crearTarea("Estudiar POO", "Conceptos de encapsulamiento", Prioridad.ALTA)
+val tarea2 = gestor.crearTarea("Implementar CLI", "Crear interfaz de usuario", Prioridad.MEDIA)
+
+// Agregar tareas al proyecto
+gestor.agregarTareaAProyecto(tarea1.id, proyecto.id)
+gestor.agregarTareaAProyecto(tarea2.id, proyecto.id)
+
+// Asignar usuarios a tareas
+gestor.asignarUsuarioATarea(tarea1.id, usuario1.id)
+gestor.asignarUsuarioATarea(tarea2.id, usuario2.id)
+
+// Buscar tareas de un usuario
+val tareasDeUsuario1 = gestor.buscarTareasPorUsuario(usuario1.id)
+println("Tareas de ${usuario1.nombre}:")
+tareasDeUsuario1.forEach { println(it) }
+
+// Cambiar estado de una tarea
+gestor.cambiarcompletado(tarea1.id)
+
+// Mostrar todos los proyectos
+val proyectos = gestor.mostrarProyectos()
+proyectos.forEach { println(it) }
 ```
 
 ### Gestión de Proyectos
 
 ```kotlin
-// Crear una tarea
-val tarea = Tarea(1, "Primera tarea", "Esta es la descripción de la primera tarea", prioridad = Prioridad.BAJA)
+val gestor = GestorDeTareas()
 
-// Crear una lista de tareas para el proyecto
-val listaTareas = listOf(tarea.titulo)
+// Crear proyecto
+val proyecto = gestor.crearProyecto("Mi Proyecto", "Descripción del proyecto")
 
-// Crear un nuevo proyecto
-val proyecto = Proyecto(1, "Proyecto de Desarrollo", "Sistema de gestión de tareas en Kotlin", listaTareas)
+// Crear tareas
+val tarea1 = gestor.crearTarea("Tarea 1", "Primera tarea", Prioridad.ALTA)
+val tarea2 = gestor.crearTarea("Tarea 2", "Segunda tarea", Prioridad.BAJA)
 
-// Mostrar información del proyecto
-println(proyecto)
-/* Salida:
-ID: 1
-Nombre: Proyecto de Desarrollo
-Esta es la descripcion del proyecto: Sistema de gestión de tareas en Kotlin
-Estas son sus tareas: [Primera tarea]
-*/
+// Agregar tareas al proyecto
+gestor.agregarTareaAProyecto(tarea1.id, proyecto.id)
+gestor.agregarTareaAProyecto(tarea2.id, proyecto.id)
+
+// Marcar una tarea como completada
+gestor.cambiarcompletado(tarea1.id)
+
+// Obtener tareas pendientes del proyecto
+val pendientes = proyecto.obtenerTareasPendientes()
+println("Tareas pendientes: ${pendientes.size}")
+
+// Obtener tareas completadas del proyecto
+val completadas = proyecto.obtenerTareasCompletadas()
+println("Tareas completadas: ${completadas.size}")
+
+// Eliminar una tarea del proyecto
+proyecto.eliminarTarea(tarea2.id)
 ```
 
 ## 🔧 Características Avanzadas
 
+### Separación de Responsabilidades
+- **GestorDeTareas**: Maneja toda la lógica de negocio y datos
+- **InterfazCLI**: Maneja solo la presentación e interacción con el usuario
+- **Main**: Solo punto de entrada, delega todo a InterfazCLI
+- Facilita testing, mantenimiento y escalabilidad
+
+### Generación Automática de IDs
+- Sistema de contadores autoincrementales para cada tipo de entidad
+- Garantiza IDs únicos sin intervención del usuario
+- Simplifica la creación de objetos
+
 ### Encapsulamiento y Seguridad
 - **Control de Estado**: Las propiedades `completada` y `asignadoA` están encapsuladas para prevenir modificaciones no controladas
+- **Listas Privadas**: Las colecciones en GestorDeTareas son privadas
 - **Interfaz Pública Segura**: Métodos específicos para cada operación garantizan la integridad de los datos
 - **Validaciones**: Control de acceso y validaciones en la asignación de usuarios
 
@@ -219,8 +323,29 @@ Estas son sus tareas: [Primera tarea]
 - **Asignación Flexible**: Las tareas pueden crearse con o sin usuario asignado
 - **Reasignación**: Posibilidad de cambiar el responsable de una tarea en cualquier momento
 - **Consulta de Asignación**: Métodos getter para verificar quién es el responsable actual
+- **Búsqueda Eficiente**: Método dedicado para encontrar todas las tareas de un usuario
+
+### Gestión Dinámica de Proyectos
+- **Agregar Tareas**: Agregar tareas existentes a proyectos dinámicamente
+- **Eliminar Tareas**: Remover tareas de proyectos con validación
+- **Filtrado**: Obtener listas de tareas pendientes o completadas
+- **Visualización**: Formateo especial para mostrar tareas de forma legible
 
 ## 📚 Conceptos de Programación Implementados
+
+### ¿Por qué usar GestorDeTareas en lugar de poner todo en main()?
+
+Separar la lógica del main() es una buena práctica porque:
+
+1. **RESPONSABILIDAD ÚNICA**: main() solo debe ser el punto de entrada, no manejar toda la lógica del negocio.
+
+2. **REUTILIZACIÓN**: GestorDeTareas puede usarse en tests, otras clases, interfaces gráficas, APIs web, etc.
+
+3. **TESTING**: Podemos hacer unit tests de cada método por separado. Con todo en main() sería imposible testear funcionalidades específicas.
+
+4. **MANTENIMIENTO**: Es más fácil encontrar y modificar código cuando está organizado en clases con propósitos específicos.
+
+5. **ESCALABILIDAD**: Permite agregar funcionalidades sin que main() se vuelva un archivo gigante e inmanejable.
 
 ### ¿Por qué `asignadoA` es de tipo `Usuario?` (nullable)?
 
@@ -273,7 +398,7 @@ La propiedad `asignadoA` está declarada como `Usuario?` (nullable) por las sigu
        val estado = if(completada) "Completada" else "Pendiente"
        val asig = asignadoA?.email  // Safe call - retorna null si asignadoA es null
        return "|$estado| [$id] $titulo - $descripcion prioridad: $prioridad \n" +
-               "asignacion: $asig"
+               "usuario respondable: $asig"
    }
    ```
 
@@ -287,26 +412,27 @@ La propiedad `asignadoA` está declarada como `Usuario?` (nullable) por las sigu
    - `asignarusuario(usuario: Usuario)` - Asignación controlada
    - `desasignarusuario()` - Desasignación segura
    - `obtenerUsuarioAsignado(): Usuario?` - Consulta segura
+   - `getAsignacion(): Usuario?` - Consulta alternativa
 
 3. **Integridad de Datos**:
    - Garantiza que los cambios de asignación pasen por la lógica de negocio
    - Permite agregar validaciones futuras (ej: verificar que el usuario esté activo)
-
-#### 💡 **Alternativas de Diseño Consideradas:**
-
-1. **Usuario no nullable**: Obligaría a asignar siempre un usuario, reduciendo flexibilidad
-2. **String en lugar de Usuario**: Perdería la relación fuerte y validaciones
-3. **Lista de usuarios**: Complicaría innecesariamente el modelo para casos simples
-
-#### 🎓 **Conceptos de Kotlin Aplicados:**
-
-- **Null Safety**: Sistema de tipos que previene NullPointerException
-- **Safe Call Operator (`?.`)**: Permite acceso seguro a propiedades de objetos nullable
-- **Elvis Operator (`?:`)**: Proporciona valores por defecto cuando hay null
-- **Encapsulamiento**: Principio de POO para controlar el acceso a los datos
 
 ## 🚀 Cómo Ejecutar
 
 1. Clona este repositorio
 2. Abre el proyecto en tu IDE favorito (IntelliJ IDEA recomendado)
 3. Ejecuta la función `main()` en `Main.kt`
+4. Interactúa con el menú CLI para gestionar tus tareas, proyectos y usuarios
+
+## 📋 Menú de Opciones CLI
+
+1. **Crear proyecto** - Crea un nuevo proyecto con nombre y descripción
+2. **Crear usuario** - Registra un nuevo usuario con email validado
+3. **Crear tarea** - Crea una nueva tarea con prioridad
+4. **Agregar Tarea A Proyecto** - Asocia una tarea existente a un proyecto
+5. **Asignar Usuario A Tarea** - Asigna un usuario como responsable de una tarea
+6. **Buscar Tareas Por Usuario** - Muestra todas las tareas de un usuario
+7. **Mostrar Proyectos** - Lista todos los proyectos con sus tareas
+8. **Cambiar el estado de la tarea** - Alterna entre pendiente y completado
+0. **Salir** - Cierra la aplicación
