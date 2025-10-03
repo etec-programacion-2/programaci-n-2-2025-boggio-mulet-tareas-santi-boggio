@@ -23,6 +23,7 @@ fun main() {
             5 -> interfas.agregarusuarioatarea()
             6 -> interfas.buscartareaporusuario()
             7 -> interfas.mostrarlosproyecto()
+            8 -> interfas.cambiarestado()
             0 -> println("¡Hasta luego!")
             else -> println("Opción inválida. Intente de nuevo.")
         }

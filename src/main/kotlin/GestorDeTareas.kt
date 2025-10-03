@@ -163,4 +163,14 @@ data class GestorDeTareas (
             }
         }
     }
+    fun cambiarcompletado(idTarea: Int){
+        for (tareaId in 0..allTareas.size-1){
+            // Si encontramos la tarea con el ID buscado
+            if (allTareas[tareaId].id == idTarea){
+                //le cambia el completado
+                allTareas[tareaId].alternarCompletada()
+            }
+        }
+
+    }
 }
