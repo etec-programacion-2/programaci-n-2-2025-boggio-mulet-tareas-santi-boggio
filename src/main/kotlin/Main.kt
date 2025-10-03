@@ -35,5 +35,4 @@ fun main() {
         }
     } while (opcion != 0)
 
-    scanner.close()
-}
+    scanner.close()}
