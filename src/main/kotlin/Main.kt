@@ -4,35 +4,842 @@
 package org.example
 
 import java.util.Scanner
+import org.http4k.core.*
+import org.http4k.core.Method.*
+import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.NOT_FOUND
+import org.http4k.core.Status.Companion.OK
+import org.http4k.lens.Path
+import org.http4k.routing.bind
+import org.http4k.routing.routes
+import org.http4k.routing.static
+import org.http4k.server.Jetty
+import org.http4k.server.asServer
 
 fun main() {
-    val interfas = InterfazCLI()
-    val scanner = Scanner(System.`in`)
-    var opcion: Int
+    val interfaz = InterfazCLI()
 
-    do {
-        interfas.mostrarMenu()
+    val app = routes(
+        "/" bind GET to {request: Request ->
+            val html = """"
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Gestor de Tareas - Sistema Completo</title>
+                    <style>
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
 
-        opcion = scanner.nextInt()
+                        :root {
+                            --primary: #667eea;
+                            --primary-dark: #5568d3;
+                            --secondary: #764ba2;
+                            --success: #10b981;
+                            --warning: #f59e0b;
+                            --danger: #ef4444;
+                            --dark: #1f2937;
+                            --light: #f9fafb;
+                            --border: #e5e7eb;
+                        }
 
-        when (opcion) {
-            1 -> interfas.crearproyecto()
-            2 -> interfas.crearusuario()
-            3 -> interfas.creartarea()
-            4 -> interfas.agregartareaaproyecto()
-            5 -> interfas.agregarusuarioatarea()
-            6 -> interfas.buscartareaporusuario()
-            7 -> interfas.mostrarlosproyecto()
-            8 -> interfas.cambiarestado()
-            0 -> println("¡Hasta luego!")
-            else -> println("Opción inválida. Intente de nuevo.")
-        }
+                        body {
+                            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            min-height: 100vh;
+                            padding: 20px;
+                            color: var(--dark);
+                        }
 
-        if (opcion != 0) {
-            println("\nPresione Enter para continuar...")
-            scanner.nextLine() // Limpiar buffer
-            scanner.nextLine() // Esperar Enter
-        }
-    } while (opcion != 0)
+                        .main-container {
+                            max-width: 1400px;
+                            margin: 0 auto;
+                        }
 
-    scanner.close()}
+                        .header {
+                            background: white;
+                            border-radius: 20px;
+                            padding: 30px;
+                            margin-bottom: 30px;
+                            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            flex-wrap: wrap;
+                            gap: 20px;
+                        }
+
+                        .header-title {
+                            display: flex;
+                            align-items: center;
+                            gap: 15px;
+                        }
+
+                        .logo {
+                            width: 60px;
+                            height: 60px;
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+                            border-radius: 15px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 30px;
+                            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+                        }
+
+                        h1 {
+                            font-size: 2em;
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            background-clip: text;
+                        }
+
+                        .stats {
+                            display: flex;
+                            gap: 20px;
+                        }
+
+                        .stat-item {
+                            text-align: center;
+                            padding: 10px 20px;
+                            background: var(--light);
+                            border-radius: 12px;
+                        }
+
+                        .stat-number {
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: var(--primary);
+                        }
+
+                        .stat-label {
+                            font-size: 12px;
+                            color: #6b7280;
+                            text-transform: uppercase;
+                            margin-top: 5px;
+                        }
+
+                        .content-grid {
+                            display: grid;
+                            grid-template-columns: 1fr 2fr;
+                            gap: 30px;
+                        }
+
+                        .sidebar {
+                            background: white;
+                            border-radius: 20px;
+                            padding: 30px;
+                            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                            height: fit-content;
+                            position: sticky;
+                            top: 20px;
+                        }
+
+                        .main-content {
+                            background: white;
+                            border-radius: 20px;
+                            padding: 30px;
+                            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                        }
+
+                        .nav-menu {
+                            list-style: none;
+                        }
+
+                        .nav-item {
+                            padding: 15px 20px;
+                            margin-bottom: 8px;
+                            border-radius: 12px;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            font-weight: 500;
+                            color: #6b7280;
+                        }
+
+                        .nav-item:hover {
+                            background: var(--light);
+                            color: var(--primary);
+                            transform: translateX(5px);
+                        }
+
+                        .nav-item.active {
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+                            color: white;
+                            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+                        }
+
+                        .nav-icon {
+                            font-size: 20px;
+                        }
+
+                        .section {
+                            display: none;
+                            animation: fadeIn 0.5s;
+                        }
+
+                        .section.active {
+                            display: block;
+                        }
+
+                        @keyframes fadeIn {
+                            from { opacity: 0; transform: translateY(20px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+
+                        .section-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 30px;
+                            padding-bottom: 20px;
+                            border-bottom: 2px solid var(--border);
+                        }
+
+                        .section-title {
+                            font-size: 1.8em;
+                            color: var(--dark);
+                        }
+
+                        .form-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                            gap: 20px;
+                            margin-bottom: 25px;
+                        }
+
+                        .form-group {
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .form-group label {
+                            font-weight: 600;
+                            margin-bottom: 8px;
+                            color: var(--dark);
+                            font-size: 14px;
+                        }
+
+                        .form-group input,
+                        .form-group textarea,
+                        .form-group select {
+                            padding: 12px 16px;
+                            border: 2px solid var(--border);
+                            border-radius: 10px;
+                            font-size: 14px;
+                            transition: all 0.3s;
+                            font-family: inherit;
+                        }
+
+                        .form-group input:focus,
+                        .form-group textarea:focus,
+                        .form-group select:focus {
+                            outline: none;
+                            border-color: var(--primary);
+                            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                        }
+
+                        .form-group textarea {
+                            resize: vertical;
+                            min-height: 100px;
+                        }
+
+                        .btn {
+                            padding: 12px 30px;
+                            border: none;
+                            border-radius: 10px;
+                            font-size: 15px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            text-decoration: none;
+                        }
+
+                        .btn-primary {
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+                            color: white;
+                            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+                        }
+
+                        .btn-primary:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+                        }
+
+                        .btn-success {
+                            background: var(--success);
+                            color: white;
+                        }
+
+                        .btn-danger {
+                            background: var(--danger);
+                            color: white;
+                        }
+
+                        .btn-small {
+                            padding: 6px 15px;
+                            font-size: 13px;
+                        }
+
+                        .cards-container {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                            gap: 20px;
+                            margin-top: 20px;
+                        }
+
+                        .card {
+                            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+                            border-radius: 15px;
+                            padding: 25px;
+                            border: 2px solid var(--border);
+                            transition: all 0.3s;
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .card::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 4px;
+                            height: 100%;
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+                        }
+
+                        .card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+                            border-color: var(--primary);
+                        }
+
+                        .card-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: start;
+                            margin-bottom: 15px;
+                        }
+
+                        .card-title {
+                            font-size: 1.3em;
+                            font-weight: 700;
+                            color: var(--dark);
+                            line-height: 1.3;
+                        }
+
+                        .card-id {
+                            background: var(--primary);
+                            color: white;
+                            padding: 4px 12px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 600;
+                        }
+
+                        .card-description {
+                            color: #6b7280;
+                            line-height: 1.6;
+                            margin-bottom: 15px;
+                        }
+
+                        .badge {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 5px;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            margin-right: 8px;
+                            margin-bottom: 8px;
+                        }
+
+                        .badge-priority-BAJA {
+                            background: #d1fae5;
+                            color: #065f46;
+                        }
+
+                        .badge-priority-MEDIA {
+                            background: #fef3c7;
+                            color: #92400e;
+                        }
+
+                        .badge-priority-ALTA {
+                            background: #fee2e2;
+                            color: #991b1b;
+                        }
+
+                        .badge-status-completada {
+                            background: #d1fae5;
+                            color: #065f46;
+                        }
+
+                        .badge-status-pendiente {
+                            background: #dbeafe;
+                            color: #1e40af;
+                        }
+
+                        .card-footer {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-top: 20px;
+                            padding-top: 15px;
+                            border-top: 1px solid var(--border);
+                        }
+
+                        .user-info {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            font-size: 14px;
+                            color: #6b7280;
+                        }
+
+                        .user-avatar {
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: 600;
+                            font-size: 14px;
+                        }
+
+                        .proyecto-tareas {
+                            margin-top: 20px;
+                            padding: 15px;
+                            background: white;
+                            border-radius: 10px;
+                            border: 1px dashed var(--border);
+                        }
+
+                        .proyecto-tareas-title {
+                            font-weight: 600;
+                            color: var(--secondary);
+                            margin-bottom: 12px;
+                            font-size: 14px;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+
+                        .tarea-mini {
+                            padding: 12px;
+                            background: var(--light);
+                            border-radius: 8px;
+                            margin-bottom: 8px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            transition: all 0.2s;
+                        }
+
+                        .tarea-mini:hover {
+                            background: #e5e7eb;
+                            transform: translateX(5px);
+                        }
+
+                        .tarea-mini-title {
+                            font-weight: 600;
+                            color: var(--dark);
+                        }
+
+                        .empty-state {
+                            text-align: center;
+                            padding: 60px 20px;
+                            color: #9ca3af;
+                        }
+
+                        .empty-state-icon {
+                            font-size: 80px;
+                            margin-bottom: 20px;
+                            opacity: 0.3;
+                        }
+
+                        .empty-state-text {
+                            font-size: 18px;
+                            font-weight: 600;
+                        }
+
+                        .alert {
+                            padding: 15px 20px;
+                            border-radius: 12px;
+                            margin-bottom: 20px;
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            animation: slideIn 0.3s;
+                        }
+
+                        @keyframes slideIn {
+                            from { transform: translateY(-20px); opacity: 0; }
+                            to { transform: translateY(0); opacity: 1; }
+                        }
+
+                        .alert-success {
+                            background: #d1fae5;
+                            color: #065f46;
+                            border: 2px solid #6ee7b7;
+                        }
+
+                        .alert-error {
+                            background: #fee2e2;
+                            color: #991b1b;
+                            border: 2px solid #fca5a5;
+                        }
+
+                        .alert-icon {
+                            font-size: 24px;
+                        }
+
+                        .modal-overlay {
+                            display: none;
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: rgba(0, 0, 0, 0.7);
+                            z-index: 1000;
+                            align-items: center;
+                            justify-content: center;
+                            animation: fadeIn 0.3s;
+                        }
+
+                        .modal-overlay.active {
+                            display: flex;
+                        }
+
+                        .modal {
+                            background: white;
+                            border-radius: 20px;
+                            padding: 30px;
+                            max-width: 500px;
+                            width: 90%;
+                            max-height: 80vh;
+                            overflow-y: auto;
+                            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+                        }
+
+                        .modal-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 20px;
+                        }
+
+                        .modal-title {
+                            font-size: 1.5em;
+                            font-weight: 700;
+                        }
+
+                        .btn-close {
+                            background: none;
+                            border: none;
+                            font-size: 24px;
+                            cursor: pointer;
+                            color: #9ca3af;
+                        }
+
+                        .btn-close:hover {
+                            color: var(--dark);
+                        }
+
+                        @media (max-width: 1024px) {
+                            .content-grid {
+                                grid-template-columns: 1fr;
+                            }
+
+                            .sidebar {
+                                position: static;
+                            }
+
+                            .nav-menu {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                                gap: 10px;
+                            }
+                        }
+
+                        @media (max-width: 768px) {
+                            .header {
+                                text-align: center;
+                            }
+
+                            .stats {
+                                flex-wrap: wrap;
+                                justify-content: center;
+                            }
+
+                            .cards-container {
+                                grid-template-columns: 1fr;
+                            }
+
+                            .form-grid {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="main-container">
+                        <div class="header">
+                            <div class="header-title">
+                                <div class="logo">📋</div>
+                                <div>
+                                    <h1>Gestor de Tareas</h1>
+                                    <p style="color: #6b7280; margin-top: 5px;">Sistema completo de gestión de proyectos</p>
+                                </div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="stat-proyectos">0</div>
+                                    <div class="stat-label">Proyectos</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number" id="stat-tareas">0</div>
+                                    <div class="stat-label">Tareas</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number" id="stat-usuarios">0</div>
+                                    <div class="stat-label">Usuarios</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="content-grid">
+                            <aside class="sidebar">
+                                <h3 style="margin-bottom: 20px; color: var(--dark);">Navegación</h3>
+                                <ul class="nav-menu">
+                                    <li class="nav-item active" onclick="showSection('proyectos')">
+                                        <span class="nav-icon">📁</span>
+                                        <span>Proyectos</span>
+                                    </li>
+                                    <li class="nav-item" onclick="showSection('tareas')">
+                                        <span class="nav-icon">✅</span>
+                                        <span>Tareas</span>
+                                    </li>
+                                    <li class="nav-item" onclick="showSection('usuarios')">
+                                        <span class="nav-icon">👥</span>
+                                        <span>Usuarios</span>
+                                    </li>
+                                    <li class="nav-item" onclick="showSection('asignaciones')">
+                                        <span class="nav-icon">🔗</span>
+                                        <span>Asignaciones</span>
+                                    </li>
+                                </ul>
+                            </aside>
+
+                            <main class="main-content">
+                                <div id="alert-container"></div>
+
+                                <!-- SECCIÓN PROYECTOS -->
+                                <div id="proyectos" class="section active">
+                                    <div class="section-header">
+                                        <h2 class="section-title">📁 Gestión de Proyectos</h2>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>Nombre del Proyecto</label>
+                                            <input type="text" id="proyecto-nombre" placeholder="Ej: Aplicación Móvil">
+                                        </div>
+                                        <div class="form-group" style="grid-column: span 1;">
+                                            <label>Descripción</label>
+                                            <textarea id="proyecto-descripcion" placeholder="Describe el proyecto..." style="min-height: 60px;"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-primary" onclick="">
+                                        <span>➕</span>
+                                        Crear Proyecto
+                                    </button>
+
+                                    <h3 style="margin-top: 40px; margin-bottom: 20px; color: var(--dark);">Lista de Proyectos</h3>
+                                    <div id="lista-proyectos" class="cards-container"></div>
+                                </div>
+
+                                <!-- SECCIÓN TAREAS -->
+                                <div id="tareas" class="section">
+                                    <div class="section-header">
+                                        <h2 class="section-title">✅ Gestión de Tareas</h2>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>Título de la Tarea</label>
+                                            <input type="text" id="tarea-titulo" placeholder="Ej: Diseñar interfaz">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Prioridad</label>
+                                            <select id="tarea-prioridad">
+                                                <option value="BAJA">🟢 Baja</option>
+                                                <option value="MEDIA">🟡 Media</option>
+                                                <option value="ALTA">🔴 Alta</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="grid-column: span 2;">
+                                            <label>Descripción</label>
+                                            <textarea id="tarea-descripcion" placeholder="Describe la tarea..."></textarea>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-primary" onclick="">
+                                        <span>➕</span>
+                                        Crear Tarea
+                                    </button>
+
+                                    <h3 style="margin-top: 40px; margin-bottom: 20px; color: var(--dark);">Lista de Tareas</h3>
+                                    <div id="lista-tareas" class="cards-container"></div>
+                                </div>
+
+                                <!-- SECCIÓN USUARIOS -->
+                                <div id="usuarios" class="section">
+                                    <div class="section-header">
+                                        <h2 class="section-title">👥 Gestión de Usuarios</h2>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>Nombre de Usuario</label>
+                                            <input type="text" id="usuario-nombre" placeholder="Ej: Juan Pérez">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="email" id="usuario-email" placeholder="juan@example.com">
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-primary" onclick="">
+                                        <span>➕</span>
+                                        Crear Usuario
+                                    </button>
+
+                                    <h3 style="margin-top: 40px; margin-bottom: 20px; color: var(--dark);">Lista de Usuarios</h3>
+                                    <div id="lista-usuarios" class="cards-container"></div>
+                                </div>
+
+                                <!-- SECCIÓN ASIGNACIONES -->
+                                <div id="asignaciones" class="section">
+                                    <div class="section-header">
+                                        <h2 class="section-title">🔗 Asignaciones y Consultas</h2>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <div>
+                                            <h3 style="margin-bottom: 15px; color: var(--dark);">Agregar Tarea a Proyecto</h3>
+                                            <div class="form-group">
+                                                <label>Proyecto</label>
+                                                <select id="asignar-proyecto">
+                                                    <option value="">Selecciona un proyecto</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Tarea</label>
+                                                <select id="asignar-tarea-proyecto">
+                                                    <option value="">Selecciona una tarea</option>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-small" onclick="">Agregar</button>
+                                        </div>
+
+                                        <div>
+                                            <h3 style="margin-bottom: 15px; color: var(--dark);">Asignar Usuario a Tarea</h3>
+                                            <div class="form-group">
+                                                <label>Tarea</label>
+                                                <select id="asignar-tarea">
+                                                    <option value="">Selecciona una tarea</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Usuario</label>
+                                                <select id="asignar-usuario">
+                                                    <option value="">Selecciona un usuario</option>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-primary btn-small" onclick="">Asignar</button>
+                                        </div>
+                                    </div>
+
+                                    <h3 style="margin-top: 40px; margin-bottom: 20px; color: var(--dark);">Buscar Tareas por Usuario</h3>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>Seleccionar Usuario</label>
+                                            <select id="buscar-usuario">
+                                                <option value="">Selecciona un usuario</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="">
+                                        <span>🔍</span>
+                                        Buscar Tareas
+                                    </button>
+
+                                    <div id="resultado-busqueda" style="margin-top: 30px;"></div>
+                                </div>
+                            </main>
+                        </div>
+                    </div>
+
+                    <script>
+                        const API_BASE = 'http://localhost:8080';
+
+
+                        function showSection(sectionId) {
+                            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                            document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+                            document.getElementById(sectionId).classList.add('active');
+                            event.target.closest('.nav-item').classList.add('active');
+                            
+                            if (sectionId === 'asignaciones') {
+                                actualizarSelectores();
+                            }
+                        }
+
+                        function showAlert(message, type = 'success') {
+                            const alertContainer = document.getElementById('alert-container');
+                            const alert = document.createElement('div');
+                            alert.className = `alert alert-${'$'}{type}`;
+                            alert.innerHTML = `
+                                <span class="alert-icon">${'$'}{type === 'success' ? '✓' : '⚠'}</span>
+                                <span>${'$'}{message}</span>
+                            `;
+                            alertContainer.appendChild(alert);
+                            setTimeout(() => alert.remove(), 3000);
+                        }
+
+                        function updateStats() {
+                            document.getElementById('stat-proyectos').textContent = gestor.allProyectos.length;
+                            document.getElementById('stat-tareas').textContent = gestor.allTareas.length;
+                            document.getElementById('stat-usuarios').textContent = gestor.allUsers.length;
+                        }
+
+                        // Inicializar la aplicación
+                        window.addEventListener('DOMContentLoaded', () => {
+                            
+                        });
+                    </script>
+                </body>
+                </html>"""".trimIndent()
+            Response(OK).header("Content-Type", "text/html").body(html)
+        },
+
+    )
+    val server = app.asServer(Jetty(8080)).start()
+    println("Server started on http://localhost:8080")
+    server.block()
+}
