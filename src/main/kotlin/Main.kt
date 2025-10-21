@@ -516,7 +516,33 @@ fun main() {
                                     <div class="section-header">
                                         <h2 class="section-title">✅ Gestión de Tareas</h2>
                                     </div>
-                                    <p>Sección de tareas en desarrollo...</p>
+
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>Título de la Tarea</label>
+                                            <input type="text" id="tarea-titulo" placeholder="Ej: Diseñar interfaz">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Prioridad</label>
+                                            <select id="tarea-prioridad">
+                                                <option value="BAJA">🟢 Baja</option>
+                                                <option value="MEDIA">🟡 Media</option>
+                                                <option value="ALTA">🔴 Alta</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="grid-column: span 2;">
+                                            <label>Descripción</label>
+                                            <textarea id="tarea-descripcion" placeholder="Describe la tarea..."></textarea>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-primary" onclick="">
+                                        <span>➕</span>
+                                        Crear Tarea
+                                    </button>
+
+                                    <h3 style="margin-top: 40px; margin-bottom: 20px; color: var(--dark);">Lista de Tareas</h3>
+                                    <div id="lista-tareas" class="cards-container"></div>
                                 </div>
 
                                 <!-- SECCIÓN USUARIOS -->
