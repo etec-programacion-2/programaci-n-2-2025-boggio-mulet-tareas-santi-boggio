@@ -12,10 +12,15 @@ import org.http4k.format.Jackson.auto
 // Data classes para las peticiones
 data class ProyectoRequest(val nombre: String, val descripcion: String)
 
+data class TareaRequest(val nombre: String, val descripcion: String, val prioridad: Prioridad)
+
 fun main() {
     // Lenses para extraer/enviar JSON
     val proyectoRequestLens = Body.auto<ProyectoRequest>().toLens()
     val proyectosLens = Body.auto<List<Proyecto>>().toLens()
+
+    val tareaRequestLens = Body.auto<TareaRequest>().toLens()
+    val tareasLens = Body.auto<List<Tarea>>().toLens()
 
     val gestorDeTareas = GestorDeTareas()
 
@@ -691,7 +696,16 @@ fun main() {
             } catch (e: Exception) {
                 Response(Status.BAD_REQUEST).body("Error al crear proyecto: ${e.message}")
             }
-        }
+        },
+
+        // GET: Obtener todos las tareas
+        "/tareas" bind GET to { request: Request ->
+            val tareas = gestorDeTareas.mostrartareas()
+            val response = tareasLens(tareas, Response(OK))
+            response.header("Content-Type", "application/json")
+        },
+
+
     )
 
     val server = app.asServer(Jetty(8080)).start()

@@ -121,6 +121,10 @@ data class GestorDeTareas (
         return allProyectos
     }
 
+    fun mostrartareas(): MutableList<Tarea>{
+        return allTareas
+    }
+
     /**
      * Busca todas las tareas asignadas a un usuario específico
      * @param idUsuario ID del usuario del cual buscar las tareas
