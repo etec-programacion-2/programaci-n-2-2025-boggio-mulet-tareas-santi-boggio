@@ -126,6 +126,22 @@ data class GestorDeTareas (
     }
 
     /**
+     * Retorna la lista completa de tareas
+     * @return Lista mutable con todas las tareas
+     */
+    fun mostrarTareas(): MutableList<Tarea>{
+        return allTareas
+    }
+
+    /**
+     * Retorna la lista completa de usuarios
+     * @return Lista mutable con todos los usuarios
+     */
+    fun mostrarUsuarios(): MutableList<Usuario>{
+        return allUsers
+    }
+
+    /**
      * Busca todas las tareas asignadas a un usuario específico
      * @param idUsuario ID del usuario del cual buscar las tareas
      * @return Lista inmutable con las tareas asignadas al usuario
@@ -167,6 +183,11 @@ data class GestorDeTareas (
             }
         }
     }
+
+    /**
+     * Cambia el estado de completado de una tarea
+     * @param idTarea ID de la tarea a modificar
+     */
     fun cambiarcompletado(idTarea: Int){
         for (tareaId in 0..allTareas.size-1){
             // Si encontramos la tarea con el ID buscado
@@ -175,6 +196,5 @@ data class GestorDeTareas (
                 allTareas[tareaId].alternarCompletada()
             }
         }
-
     }
 }
