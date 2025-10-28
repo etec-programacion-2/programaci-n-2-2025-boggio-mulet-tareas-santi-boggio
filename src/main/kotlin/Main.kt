@@ -18,8 +18,6 @@ data class AsignarTareaProyectoRequest(val idTarea: Int, val idProyecto: Int)
 data class AsignarUsuarioTareaRequest(val idTarea: Int, val idUsuario: Int)
 data class CompletarTareaRequest(val idTarea: Int)
 
-data class TareaRequest(val nombre: String, val descripcion: String, val prioridad: Prioridad)
-
 fun main() {
     // Lenses para extraer/enviar JSON
     val proyectoRequestLens = Body.auto<ProyectoRequest>().toLens()
@@ -37,9 +35,6 @@ fun main() {
     val asignarTareaProyectoLens = Body.auto<AsignarTareaProyectoRequest>().toLens()
     val asignarUsuarioTareaLens = Body.auto<AsignarUsuarioTareaRequest>().toLens()
     val completarTareaLens = Body.auto<CompletarTareaRequest>().toLens()
-
-    val tareaRequestLens = Body.auto<TareaRequest>().toLens()
-    val tareasLens = Body.auto<List<Tarea>>().toLens()
 
     val gestorDeTareas = GestorDeTareas()
 
@@ -76,23 +71,14 @@ fun main() {
             }
         },
 
-<<<<<<< HEAD
-        // GET: Obtener todos las tareas
-        "/tareas" bind GET to { request: Request ->
-            val tareas = gestorDeTareas.mostrartareas()
-=======
         // ============ TAREAS ============
         // GET: Obtener todas las tareas
         "/tareas" bind GET to { request: Request ->
             val tareas = gestorDeTareas.mostrarTareas()
->>>>>>> 3eba8c3 (finalizado con errores)
             val response = tareasLens(tareas, Response(OK))
             response.header("Content-Type", "application/json")
         },
 
-<<<<<<< HEAD
-
-=======
         // POST: Crear una nueva tarea
         "/tareas" bind POST to { request: Request ->
             try {
@@ -178,7 +164,6 @@ fun main() {
                 Response(Status.BAD_REQUEST).body("Error al asignar usuario a tarea: ${e.message}")
             }
         }
->>>>>>> 3eba8c3 (finalizado con errores)
     )
 
     val server = app.asServer(Jetty(8080)).start()
