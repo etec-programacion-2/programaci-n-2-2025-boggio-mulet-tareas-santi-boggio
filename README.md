@@ -57,7 +57,7 @@ Puedes clonar el repositorio desde GitHub o descargarlo como archivo ZIP.
 ### 🔹 Clonar con Git
 
 ```bash
-git clone https://github.com/santi/programacion-2-2025-boggio-mulet-tareas-santi-boggio.git
+git clone https://github.com/santimulet12/programacion-2-2025-boggio-mulet-tareas-santi-boggio.git
 cd programacion-2-2025-boggio-mulet-tareas-santi-boggio
 ```
 ### 🔹 Compilar y ejecutar la aplicación
