@@ -14,7 +14,7 @@ data class Tarea (
     val id: Int,
     val titulo: String,
     val descripcion: String,
-    private var completada: Boolean = false, // Ahora es privada para forzar el uso de métodos
+    var completada: Boolean = false, // Ahora es privada para forzar el uso de métodos
     val prioridad: Prioridad,
     private var asignadoA: Usuario? = null // Propiedad privada para controlar la asignación de usuarios
 ){

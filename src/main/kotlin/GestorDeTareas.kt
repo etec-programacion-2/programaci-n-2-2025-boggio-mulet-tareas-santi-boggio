@@ -82,12 +82,12 @@ data class GestorDeTareas (
      */
     fun crearTarea(nombreTarea: String, descripcionTarea: String, prioridadTarea: Prioridad): Tarea{
         // Crear nueva tarea con ID actual y datos proporcionados
-        val tarea: Tarea = Tarea(idTareaActual,nombreTarea, descripcionTarea, prioridad = prioridadTarea)
+        val tarea: Tarea = Tarea(id = idTareaActual, titulo = nombreTarea, descripcion = descripcionTarea, prioridad = prioridadTarea)
         // Agregar la tarea a la lista de todas las tareas
         allTareas.add(tarea)
         // Incrementar el contador de ID para la próxima tarea
         idTareaActual += 1
-        // Retornar la tarea creada
+        // Retornar el tarea creada
         return tarea
     }
 
@@ -119,6 +119,26 @@ data class GestorDeTareas (
      */
     fun mostrarProyectos(): MutableList<Proyecto>{
         return allProyectos
+    }
+
+    fun mostrartareas(): MutableList<Tarea>{
+        return allTareas
+    }
+
+    /**
+     * Retorna la lista completa de tareas
+     * @return Lista mutable con todas las tareas
+     */
+    fun mostrarTareas(): MutableList<Tarea>{
+        return allTareas
+    }
+
+    /**
+     * Retorna la lista completa de usuarios
+     * @return Lista mutable con todos los usuarios
+     */
+    fun mostrarUsuarios(): MutableList<Usuario>{
+        return allUsers
     }
 
     /**
@@ -163,6 +183,11 @@ data class GestorDeTareas (
             }
         }
     }
+
+    /**
+     * Cambia el estado de completado de una tarea
+     * @param idTarea ID de la tarea a modificar
+     */
     fun cambiarcompletado(idTarea: Int){
         for (tareaId in 0..allTareas.size-1){
             // Si encontramos la tarea con el ID buscado
@@ -171,6 +196,5 @@ data class GestorDeTareas (
                 allTareas[tareaId].alternarCompletada()
             }
         }
-
     }
 }
