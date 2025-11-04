@@ -119,6 +119,64 @@ chmod +x gradlew
 
 ## ▶️ Compilar y Ejecutar la Aplicación
 
+### IMPORTANTE: Configuración Previa
+
+⚠️ **Antes de ejecutar**, debes modificar el archivo `build.gradle.kts` para agregar el plugin de aplicación.
+
+Abre `build.gradle.kts` y modifica la sección de `plugins` para que quede así:
+
+```kotlin
+plugins {
+    kotlin("jvm") version "2.2.0"
+    application  // ← AGREGAR ESTA LÍNEA
+}
+```
+
+Luego, **agrega al final del archivo** (después de la sección `kotlin`):
+
+```kotlin
+application {
+    mainClass.set("org.example.MainKt")
+}
+```
+
+El archivo completo debería verse así:
+
+```kotlin
+val http4kVersion = "5.13.4.0"
+plugins {
+    kotlin("jvm") version "2.2.0"
+    application  // ← AGREGADO
+}
+
+group = "org.example"
+version = "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+dependencies {
+    testImplementation(kotlin("test"))
+    implementation("org.http4k:http4k-core:$http4kVersion")
+    implementation("org.http4k:http4k-server-jetty:$http4kVersion")
+    implementation("org.http4k:http4k-format-jackson:$http4kVersion")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+application {
+    mainClass.set("org.example.MainKt")
+}
+```
+
 ### Paso 1: Compilar el Proyecto
 
 Abre una terminal en la raíz del proyecto y ejecuta:
@@ -143,6 +201,8 @@ gradlew.bat build
 
 ### Paso 2: Ejecutar la Aplicación
 
+Ahora sí puedes ejecutar:
+
 #### Windows
 ```cmd
 gradlew.bat run
@@ -160,6 +220,22 @@ gradlew.bat run
 ```
 
 > ✅ Si ves este mensaje, el servidor está corriendo correctamente.
+
+### Método Alternativo (sin modificar build.gradle.kts)
+
+Si prefieres no modificar el archivo de configuración, puedes ejecutar directamente:
+
+#### Linux/macOS
+```bash
+./gradlew build
+java -cp "build/libs/*:build/classes/kotlin/main" org.example.MainKt
+```
+
+#### Windows
+```cmd
+gradlew.bat build
+java -cp "build\libs\*;build\classes\kotlin\main" org.example.MainKt
+```
 
 ---
 
@@ -279,6 +355,11 @@ Para detener el servidor:
 ---
 
 ## 🐛 Solución de Problemas Comunes
+
+### Error: "Task 'run' not found"
+**Problema**: El archivo `build.gradle.kts` no tiene configurado el plugin `application`
+
+**Solución**: Sigue las instrucciones en la sección "Configuración Previa" para agregar el plugin al archivo `build.gradle.kts`. O usa el método alternativo con el comando `java -cp` directo.
 
 ### Error: "java: command not found"
 **Problema**: Java no está instalado o no está en el PATH
