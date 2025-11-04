@@ -221,22 +221,6 @@ gradlew.bat run
 
 > ✅ Si ves este mensaje, el servidor está corriendo correctamente.
 
-### Método Alternativo (sin modificar build.gradle.kts)
-
-Si prefieres no modificar el archivo de configuración, puedes ejecutar directamente:
-
-#### Linux/macOS
-```bash
-./gradlew build
-java -cp "build/libs/*:build/classes/kotlin/main" org.example.MainKt
-```
-
-#### Windows
-```cmd
-gradlew.bat build
-java -cp "build\libs\*;build\classes\kotlin\main" org.example.MainKt
-```
-
 ---
 
 ## 🌐 Acceder a la Aplicación
