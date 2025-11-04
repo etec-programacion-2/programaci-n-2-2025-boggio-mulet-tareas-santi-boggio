@@ -12,7 +12,7 @@ data class Proyecto(
     val id: Int,
     val nombre: String,
     val descripcion: String,
-    private var listadetareas: MutableList<Tarea> = mutableListOf<Tarea>()
+    var listadetareas: MutableList<Tarea> = mutableListOf<Tarea>()
 
 ) {
     /**

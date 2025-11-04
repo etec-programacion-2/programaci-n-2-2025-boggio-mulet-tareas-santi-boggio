@@ -575,7 +575,6 @@
         <main class="main-content">
             <div id="alert-container"></div>
 
-            <!-- SECCIÓN PROYECTOS -->
             <div id="proyectos" class="section active">
                 <div class="section-header">
                     <h2 class="section-title">📁 Gestión de Proyectos</h2>
@@ -601,7 +600,6 @@
                 <div id="lista-proyectos" class="cards-container"></div>
             </div>
 
-            <!-- SECCIÓN TAREAS -->
             <div id="tareas" class="section">
                 <div class="section-header">
                     <h2 class="section-title">✅ Gestión de Tareas</h2>
@@ -635,7 +633,6 @@
                 <div id="lista-tareas" class="cards-container"></div>
             </div>
 
-            <!-- SECCIÓN USUARIOS -->
             <div id="usuarios" class="section">
                 <div class="section-header">
                     <h2 class="section-title">👥 Gestión de Usuarios</h2>
@@ -661,7 +658,6 @@
                 <div id="lista-usuarios" class="cards-container"></div>
             </div>
 
-            <!-- SECCIÓN ASIGNACIONES -->
             <div id="asignaciones" class="section">
                 <div class="section-header">
                     <h2 class="section-title">🔗 Asignaciones y Consultas</h2>
@@ -730,7 +726,10 @@
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
-        event.target.closest('.nav-item').classList.add('active');
+        // Prevenir error si se hace clic en algo que no es un nav-item
+        if (event && event.target.closest('.nav-item')) {
+            event.target.closest('.nav-item').classList.add('active');
+        }
 
         if (sectionId === 'proyectos') {
             cargarProyectos();
@@ -822,18 +821,22 @@
             container.innerHTML = proyectos.map(proyecto => `
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">${proyecto.name}</h3>
-                        <span class="card-id">#${proyecto.id}</span>
+                        <h3 class="card-title">${proyecto.nombre}</h3> <span class="card-id">#${proyecto.id}</span>
                     </div>
                     <p class="card-description">${proyecto.descripcion}</p>
-                    ${proyecto.tareas && proyecto.tareas.length > 0 ? `
+
+                    ${proyecto.listadetareas && proyecto.listadetareas.length > 0 ? `
                         <div class="proyecto-tareas">
-                            <div class="proyecto-tareas-title">Tareas del Proyecto (${proyecto.tareas.length})</div>
-                            ${proyecto.tareas.map(tarea => `
+                            <div class="proyecto-tareas-title">Tareas del Proyecto (${proyecto.listadetareas.length})</div>
+
+                            ${proyecto.listadetareas.map(tarea => `
                                 <div class="tarea-mini">
-                                    <span class="tarea-mini-title">${tarea.nombre}</span>
-                                    <span class="badge badge-priority-${tarea.prioridad}">${tarea.prioridad}</span>
-                                </div>
+                                    <span class="tarea-mini-title">${tarea.titulo}</span>
+
+                                    <span class="badge badge-status-${tarea.completada}">
+                                        ${tarea.completada ? '✓ Completada' : '⏳ Pendiente'}
+                                    </span>
+                                    </div>
                             `).join('')}
                         </div>
                     ` : '<p style="color: #9ca3af; font-size: 14px; margin-top: 10px;">Sin tareas asignadas</p>'}
@@ -897,7 +900,7 @@
             container.innerHTML = tareas.map(tarea => `
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">${tarea.nombre}</h3>
+                        <h3 class="card-title">${tarea.titulo}</h3>
                         <span class="card-id">#${tarea.id}</span>
                     </div>
                     <p class="card-description">${tarea.descripcion}</p>
@@ -912,10 +915,11 @@
                     <div class="card-footer">
                         ${tarea.asignacion ? `
                             <div class="user-info">
-                                <div class="user-avatar">${tarea.asignacion.username.charAt(0).toUpperCase()}</div>
-                                <span>${tarea.asignacion.username}</span>
+                                <div class="user-avatar">${tarea.asignacion.nombre.charAt(0).toUpperCase()}</div>
+                                <span>${tarea.asignacion.nombre}</span>
                             </div>
                         ` : '<span style="color: #9ca3af; font-size: 14px;">Sin asignar</span>'}
+
                         <button class="btn btn-small ${tarea.completada ? 'btn-danger' : 'btn-success'}"
                                 onclick="cambiarEstadoTarea(${tarea.id})">
                             ${tarea.completada ? '↩️ Marcar Pendiente' : '✓ Completar'}
@@ -939,6 +943,7 @@
 
             if (response.ok) {
                 await cargarTareas();
+                await cargarProyectos(); // Se recargan ambos para mantener consistencia
                 showAlert("Estado de tarea actualizado!");
             } else {
                 showAlert('Error al actualizar tarea', 'error');
@@ -1000,9 +1005,9 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="user-info">
-                            <div class="user-avatar">${usuario.username.charAt(0).toUpperCase()}</div>
+                            <div class="user-avatar">${usuario.nombre.charAt(0).toUpperCase()}</div>
                             <div>
-                                <h3 class="card-title">${usuario.username}</h3>
+                                <h3 class="card-title">${usuario.nombre}</h3>
                                 <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">${usuario.email}</p>
                             </div>
                         </div>
@@ -1028,14 +1033,14 @@
             // Selector de proyectos
             const selectProyecto = document.getElementById('asignar-proyecto');
             selectProyecto.innerHTML = '<option value="">Selecciona un proyecto</option>' +
-                proyectos.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                proyectos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join('');
 
             // Selectores de tareas
             const selectoresTareas = ['asignar-tarea-proyecto', 'asignar-tarea'];
             selectoresTareas.forEach(id => {
                 const select = document.getElementById(id);
                 select.innerHTML = '<option value="">Selecciona una tarea</option>' +
-                    tareas.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
+                    tareas.map(t => `<option value="${t.id}">${t.titulo}</option>`).join('');
             });
 
             // Selectores de usuarios
@@ -1043,7 +1048,7 @@
             selectoresUsuarios.forEach(id => {
                 const select = document.getElementById(id);
                 select.innerHTML = '<option value="">Selecciona un usuario</option>' +
-                    usuarios.map(u => `<option value="${u.id}">${u.username}</option>`).join('');
+                    usuarios.map(u => `<option value="${u.id}">${u.nombre}</option>`).join('');
             });
         } catch (error) {
             console.error('Error al actualizar selectores:', error);
@@ -1133,13 +1138,13 @@
 
             container.innerHTML = `
                 <h3 style="margin-bottom: 20px; color: var(--dark);">
-                    Tareas de ${usuario ? usuario.username : 'Usuario'} (${tareas.length})
+                    Tareas de ${usuario ? usuario.nombre : 'Usuario'} (${tareas.length})
                 </h3>
                 <div class="cards-container">
                     ${tareas.map(tarea => `
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">${tarea.nombre}</h3>
+                                <h3 class="card-title">${tarea.titulo}</h3>
                                 <span class="card-id">#${tarea.id}</span>
                             </div>
                             <p class="card-description">${tarea.descripcion}</p>
@@ -1168,3 +1173,5 @@
     });
 
 </script>
+</body>
+</html>

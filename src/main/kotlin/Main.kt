@@ -41,7 +41,8 @@ fun main() {
     val app = routes(
         // Servir el archivo HTML
         "/" bind GET to { request: Request ->
-            val htmlFile = File("/home/etec/programaci-n-2-2025-boggio-mulet-tareas-santi-boggio/index.html")
+            // MODIFICACIÓN: Cambiamos la ruta relativa
+            val htmlFile = File("index.html") // Antes: File("../../index.html")
             if (htmlFile.exists()) {
                 Response(OK)
                     .header("Content-Type", "text/html; charset=UTF-8")
