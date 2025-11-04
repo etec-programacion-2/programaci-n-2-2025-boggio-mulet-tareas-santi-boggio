@@ -73,9 +73,3 @@ cd programacion-2-2025-boggio-mulet-tareas-santi-boggio
 ```bash
 ./gradlew run
 ```
-
-### Configuración adicional
-
-JVM: Usa Java 17 (verificado en el archivo build.gradle.kts con jvmToolchain(17)).
-
-Framework: El proyecto utiliza http4k
